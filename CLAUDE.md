@@ -9,6 +9,8 @@ Jeder Push auf `main` baut die Seite (GitHub Action `.github/workflows/deploy.ym
 und lädt `dist/` per SFTP nach `public_html`. Zugangsdaten liegen als GitHub-Secrets
 (`SFTP_HOST`, `SFTP_PORT`, `SFTP_USER`, `SFTP_PASSWORD`, optional `SFTP_PATH`).
 Niemals Zugangsdaten in Dateien schreiben oder im Chat erfragen.
+Der Upload löscht bewusst nichts auf dem Server (kein `--delete`), weil in `public_html`
+auch andere Dateien liegen können. Diese Option nicht wieder einbauen.
 
 Vor jedem Push: `npm run build` muss fehlerfrei laufen.
 
