@@ -69,7 +69,6 @@ Schriften; die Karte lädt OpenStreetMap erst nach Klick (Datenschutz).
 
 ## Offene Punkte
 
-- Impressum und Datenschutz: echte Anschrift und E-Mail eintragen (Platzhalter in eckigen Klammern)
 - Beispiel-Touren (`beispiel-*`) löschen, sobald die erste echte Tour online ist
 - Platzhalterbilder (Hero, Kategorien, Über mich) durch echte Fotos ersetzen
 - Zahlen in `site.config.ts` (stats) füllen
