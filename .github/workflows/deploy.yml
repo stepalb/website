@@ -50,7 +50,7 @@ jobs:
             set sftp:auto-confirm yes;
             set net:max-retries 3;
             open --env-password -u \"$SFTP_USER\" -p \"$SFTP_PORT\" sftp://$SFTP_HOST;
-            mirror --reverse --delete --verbose --parallel=4 \
+            mirror --reverse --verbose --parallel=4 \
               --exclude-glob .well-known/ \
               --exclude-glob cgi-bin/ \
               dist/ \"${SFTP_PATH:-public_html}\"/
