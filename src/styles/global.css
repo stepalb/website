@@ -1,0 +1,137 @@
+
+:root {
+  --ink: #18211d;
+  --kiefer: #1f2e28;
+  --senf: #e0a526;
+  --senf-dunkel: #8a6209;
+  --sand: #ebe7df;
+  --papier: #ffffff;
+  --stein: #5c6661;
+  --linie: #d9d4ca;
+
+  --display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --text: 'Source Serif 4 Variable', Georgia, serif;
+
+  --breite: 76rem;
+  --rand: clamp(1rem, 4vw, 2.5rem);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--ink);
+  font-family: var(--text);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-optical-sizing: auto;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--senf);
+  outline-offset: 3px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: 0.005em;
+  margin: 0;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--breite);
+  margin-inline: auto;
+  padding-inline: var(--rand);
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Abschnittsköpfe: Titel links, Link rechts, darunter die "Route" als Linie */
+.abschnitt-kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+.abschnitt-kopf h2 { font-size: clamp(2rem, 4vw, 2.75rem); }
+.abschnitt-kopf h2::after {
+  content: '';
+  display: block;
+  width: 3.5rem;
+  height: 4px;
+  margin-top: 0.6rem;
+  background: repeating-linear-gradient(90deg, var(--senf) 0 10px, transparent 10px 15px);
+}
+
+.textlink {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--senf);
+  padding-bottom: 2px;
+}
+.textlink:hover { color: var(--senf-dunkel); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  padding: 0.7rem 1.4rem;
+  border: 2px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.btn-senf { background: var(--senf); color: var(--ink); }
+.btn-senf:hover { background: #f0b737; }
+.btn-hell { border-color: rgba(255, 255, 255, 0.85); color: #fff; }
+.btn-hell:hover { background: #fff; color: var(--ink); }
+.btn-dunkel { border-color: var(--ink); color: var(--ink); background: transparent; }
+.btn-dunkel:hover { background: var(--ink); color: #fff; }
+
+/* Fließtext in Beiträgen */
+.prosa { max-width: 40rem; }
+.prosa > * + * { margin-top: 1.1em; }
+.prosa p, .prosa li { line-height: 1.7; }
+.prosa h2 { font-size: 2rem; margin-top: 2.2em; }
+.prosa h3 { font-size: 1.5rem; margin-top: 1.8em; }
+.prosa h2 + *, .prosa h3 + * { margin-top: 0.6em; }
+.prosa img {
+  width: 100%;
+  margin-block: 2rem;
+}
+.prosa blockquote {
+  margin-inline: 0;
+  padding-left: 1.25rem;
+  border-left: 4px solid var(--senf);
+  font-style: italic;
+}
+.prosa a { text-decoration-color: var(--senf); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.prosa ul { padding-left: 1.2rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

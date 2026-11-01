@@ -1,0 +1,161 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import TourMap from '../../components/TourMap.astro';
+import TourCard from '../../components/TourCard.astro';
+import { kategorien } from '../../site.config';
+import { alleTouren, kennzahlen, datum, lesezeit, type Tour } from '../../lib/touren';
+import { profilePath, fmt } from '../../lib/gpx';
+
+export async function getStaticPaths() {
+  const touren = await alleTouren();
+  return touren.map((tour, i) => ({
+    params: { slug: tour.id },
+    props: { tour, neuer: touren[i - 1], aelter: touren[i + 1] },
+  }));
+}
+
+interface Props { tour: Tour; neuer?: Tour; aelter?: Tour }
+const { tour, neuer, aelter } = Astro.props;
+const { Content } = await render(tour);
+const { track, distanz, hoehenmeter, tage } = kennzahlen(tour);
+const kat = kategorien[tour.data.kategorie];
+const profil = track ? profilePath(track) : null;
+const og = await getImage({ src: tour.data.cover, width: 1200, format: 'jpg' });
+
+// GPX-Dateien als herunterladbare Assets
+const gpxDateien = import.meta.glob('/src/content/touren/**/*.gpx', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
+const gpxUrl = tour.data.gpx ? gpxDateien[`/src/content/touren/${tour.id}/${tour.data.gpx}`] : undefined;
+
+const fakten = [
+  distanz ? { wert: fmt(distanz), einheit: 'km', label: 'Distanz' } : null,
+  hoehenmeter ? { wert: fmt(hoehenmeter), einheit: 'hm', label: 'Höhenmeter' } : null,
+  tage ? { wert: String(tage), einheit: tage === 1 ? 'Tag' : 'Tage', label: 'Dauer' } : null,
+  tour.data.region ? { wert: tour.data.region, einheit: '', label: 'Region' } : null,
+].filter(Boolean) as { wert: string; einheit: string; label: string }[];
+---
+<Base title={tour.data.title} description={tour.data.description} image={og.src}>
+  <article>
+    <header class="wrap tour-kopf">
+      <p class="tour-kat"><a href={`/kategorie/${tour.data.kategorie}/`}>{kat.name}</a></p>
+      <h1>{tour.data.title}</h1>
+      <p class="tour-lead">{tour.data.description}</p>
+      <p class="tour-meta">
+        <time datetime={tour.data.date.toISOString()}>{datum(tour.data.date)}</time>
+        <span>{lesezeit(tour.body)} Min. Lesezeit</span>
+      </p>
+    </header>
+
+    <div class="wrap tour-cover">
+      <Image src={tour.data.cover} alt={tour.data.coverAlt} widths={[800, 1300, 1800]} sizes="(max-width: 1240px) 100vw, 1200px" loading="eager" fetchpriority="high" />
+    </div>
+
+    {(fakten.length > 0 || profil) && (
+      <section class="wrap streckenband" aria-label="Kennzahlen der Strecke">
+        {fakten.length > 0 && (
+          <dl class="fakten">
+            {fakten.map((f) => (
+              <div>
+                <dt>{f.label}</dt>
+                <dd>{f.wert}{f.einheit && <span> {f.einheit}</span>}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+        {profil && track && (
+          <figure class="profil">
+            <svg viewBox="0 0 1000 120" preserveAspectRatio="none" role="img" aria-label={`Höhenprofil von ${fmt(track.minEle)} bis ${fmt(track.maxEle)} Meter`}>
+              <path d={profil.area} fill="var(--sand)" />
+              <path d={profil.line} fill="none" stroke="var(--ink)" stroke-width="2" vector-effect="non-scaling-stroke" />
+            </svg>
+            <figcaption>
+              <span>Höhenprofil</span>
+              <span>{fmt(track.minEle)}–{fmt(track.maxEle)} m</span>
+            </figcaption>
+          </figure>
+        )}
+      </section>
+    )}
+
+    <div class="wrap tour-body">
+      <div class="prosa"><Content /></div>
+    </div>
+
+    {track && (
+      <section class="wrap tour-route">
+        <div class="abschnitt-kopf"><h2>Die Route</h2></div>
+        <TourMap line={track.line} gpxUrl={gpxUrl} name={tour.id} />
+      </section>
+    )}
+  </article>
+
+  {(neuer || aelter) && (
+    <nav class="weiter" aria-label="Weitere Touren">
+      <div class="wrap">
+        <div class="abschnitt-kopf"><h2>Weiterlesen</h2></div>
+        <div class="weiter-raster">
+          {aelter && <TourCard tour={aelter} />}
+          {neuer && <TourCard tour={neuer} />}
+        </div>
+      </div>
+    </nav>
+  )}
+</Base>
+
+<style>
+  .tour-kopf { padding-top: clamp(2.5rem, 6vw, 4.5rem); max-width: 60rem; margin-inline: auto; }
+  .tour-kat { margin: 0 0 1rem; }
+  .tour-kat a {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    background: var(--senf);
+    padding: 0.2rem 0.6rem;
+  }
+  .tour-kopf h1 { font-size: clamp(2.6rem, 6.5vw, 5rem); line-height: 0.95; text-wrap: balance; }
+  .tour-lead { font-size: 1.25rem; line-height: 1.5; max-width: 40rem; margin: 1.25rem 0 0; color: #333d38; }
+  .tour-meta { display: flex; flex-wrap: wrap; gap: 0 1.25rem; font-size: 0.95rem; color: var(--stein); margin: 1rem 0 0; }
+
+  .tour-cover { margin-top: 2.5rem; }
+  .tour-cover img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+
+  .streckenband {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2.5rem;
+    align-items: end;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--linie);
+  }
+  .fakten { display: flex; flex-wrap: wrap; gap: 1.25rem 2.25rem; margin: 0; }
+  .fakten div { display: flex; flex-direction: column-reverse; }
+  .fakten dt { font-size: 0.85rem; color: var(--stein); }
+  .fakten dd { margin: 0; font-family: var(--display); font-weight: 900; font-size: 2.4rem; line-height: 1; }
+  .fakten dd span { font-weight: 700; font-size: 1.3rem; }
+  .profil { margin: 0; min-width: 0; }
+  .profil svg { display: block; width: 100%; height: 90px; }
+  .profil figcaption {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--stein);
+    border-top: 2px solid var(--ink);
+    padding-top: 0.3rem;
+  }
+
+  .tour-body { padding-block: 3rem 1rem; display: flex; justify-content: center; }
+  .tour-body .prosa { width: 100%; }
+  .tour-route { padding-block: 3rem; max-width: 60rem; margin-inline: auto; }
+
+  .weiter { background: var(--sand); padding-block: 4rem; }
+  .weiter-raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 22rem)); gap: 1.5rem; }
+  .weiter :global(.karte) { background: transparent; }
+
+  @media (max-width: 760px) {
+    .tour-cover { padding-inline: 0; }
+    .streckenband { grid-template-columns: 1fr; gap: 1.5rem; }
+    .fakten dd { font-size: 2rem; }
+  }
+</style>

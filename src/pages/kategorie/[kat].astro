@@ -1,0 +1,16 @@
+---
+import Base from '../../layouts/Base.astro';
+import TourListe from '../../components/TourListe.astro';
+import { kategorien, type KategorieKey } from '../../site.config';
+import { alleTouren } from '../../lib/touren';
+
+export function getStaticPaths() {
+  return Object.keys(kategorien).map((kat) => ({ params: { kat } }));
+}
+const kat = Astro.params.kat as KategorieKey;
+const k = kategorien[kat];
+const touren = (await alleTouren()).filter((t) => t.data.kategorie === kat);
+---
+<Base title={k.name} description={k.text}>
+  <TourListe titel={k.name} text={k.text} touren={touren} aktiv={kat} />
+</Base>

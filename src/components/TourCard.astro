@@ -1,0 +1,89 @@
+---
+import { Image } from 'astro:assets';
+import { kategorien } from '../site.config';
+import { type Tour, kennzahlen, datum } from '../lib/touren';
+import { fmt } from '../lib/gpx';
+
+interface Props { tour: Tour; gross?: boolean }
+const { tour, gross = false } = Astro.props;
+const { distanz, hoehenmeter, tage } = kennzahlen(tour);
+const kat = kategorien[tour.data.kategorie];
+const fakten = [
+  distanz ? `${fmt(distanz)} km` : null,
+  hoehenmeter ? `${fmt(hoehenmeter)} hm` : null,
+  tage ? `${tage} ${tage === 1 ? 'Tag' : 'Tage'}` : null,
+].filter(Boolean);
+---
+<article class:list={['karte', { gross }]}>
+  <a href={`/touren/${tour.id}/`} class="karte-link">
+    <div class="karte-bild">
+      <Image
+        src={tour.data.cover}
+        alt={tour.data.coverAlt}
+        widths={gross ? [600, 900, 1300] : [400, 600, 800]}
+        sizes={gross ? '(max-width: 760px) 100vw, 50vw' : '(max-width: 760px) 100vw, 25vw'}
+      />
+      <span class="karte-kat">{kat.name}</span>
+    </div>
+    <div class="karte-text">
+      <h3>{tour.data.title}</h3>
+      <p class="karte-meta">
+        <time datetime={tour.data.date.toISOString()}>{datum(tour.data.date)}</time>
+        {tour.data.region && <span>{tour.data.region}</span>}
+      </p>
+      {fakten.length > 0 && (
+        <p class="karte-fakten">{fakten.map((f) => <span>{f}</span>)}</p>
+      )}
+    </div>
+  </a>
+</article>
+
+<style>
+  .karte { background: var(--papier); height: 100%; }
+  .karte-link { display: flex; flex-direction: column; height: 100%; text-decoration: none; }
+  .karte-bild { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--sand); }
+  .gross .karte-bild { aspect-ratio: 16 / 10; }
+  .karte-bild img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+  .karte-link:hover img { transform: scale(1.03); }
+  .karte-kat {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: var(--senf);
+    color: var(--ink);
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.2rem 0.6rem;
+  }
+  .karte-text { padding: 1rem 0 0.25rem; }
+  .karte h3 {
+    font-family: var(--text);
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+  .gross h3 { font-size: 1.55rem; }
+  .karte-link:hover h3 { text-decoration: underline; text-decoration-color: var(--senf); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .karte-meta {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    color: var(--stein);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.9rem;
+  }
+  .karte-fakten {
+    margin: 0.6rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .karte-fakten span {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1rem;
+    border: 1px solid var(--linie);
+    padding: 0.05rem 0.5rem;
+  }
+</style>

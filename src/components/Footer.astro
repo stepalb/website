@@ -1,0 +1,86 @@
+---
+import { site, kategorien } from '../site.config';
+const jahr = new Date().getFullYear();
+const social = Object.entries(site.social).filter(([, url]) => url);
+const socialName: Record<string, string> = { instagram: 'Instagram', strava: 'Strava', komoot: 'Komoot' };
+---
+<footer class="fuss">
+  <div class="wrap fuss-raster">
+    <div class="fuss-marke">
+      <p class="fuss-name">{site.name}</p>
+      <p class="fuss-text">{site.tagline}.</p>
+    </div>
+    <nav aria-label="Touren">
+      <p class="fuss-titel">Touren</p>
+      <ul>
+        {Object.entries(kategorien).map(([key, k]) => (
+          <li><a href={`/kategorie/${key}/`}>{k.name}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <nav aria-label="Seite">
+      <p class="fuss-titel">Seite</p>
+      <ul>
+        <li><a href="/ueber-mich/">Über mich</a></li>
+        <li><a href="/rss.xml">RSS-Feed</a></li>
+        {social.map(([k, url]) => <li><a href={url} rel="me noopener">{socialName[k]}</a></li>)}
+      </ul>
+    </nav>
+    <nav aria-label="Rechtliches">
+      <p class="fuss-titel">Rechtliches</p>
+      <ul>
+        <li><a href="/impressum/">Impressum</a></li>
+        <li><a href="/datenschutz/">Datenschutz</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="wrap fuss-unten">
+    <p>© {jahr} {site.author}</p>
+  </div>
+</footer>
+
+<style>
+  .fuss {
+    background: var(--kiefer);
+    color: #e6e9e4;
+    padding-top: 3.5rem;
+    margin-top: 0;
+  }
+  .fuss-raster {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+  .fuss-name {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0;
+  }
+  .fuss-text { margin: 0.3rem 0 0; color: #b9c2bc; }
+  .fuss-titel {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--senf);
+    margin: 0 0 0.6rem;
+  }
+  .fuss ul { list-style: none; margin: 0; padding: 0; }
+  .fuss li + li { margin-top: 0.3rem; }
+  .fuss a { text-decoration: none; color: #e6e9e4; }
+  .fuss a:hover { text-decoration: underline; text-decoration-color: var(--senf); }
+  .fuss-unten {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 3rem;
+    padding-block: 1.25rem;
+    font-size: 0.9rem;
+    color: #9fa9a3;
+  }
+  .fuss-unten p { margin: 0; }
+  @media (max-width: 760px) {
+    .fuss-raster { grid-template-columns: 1fr 1fr; }
+    .fuss-marke { grid-column: 1 / -1; }
+  }
+</style>

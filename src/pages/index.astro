@@ -1,0 +1,276 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import TourCard from '../components/TourCard.astro';
+import { site, kategorien, type KategorieKey } from '../site.config';
+import { alleTouren } from '../lib/touren';
+
+import hero from '../assets/placeholder/hero.jpg';
+import ueberMich from '../assets/placeholder/ueber-mich.jpg';
+import katMehrtages from '../assets/placeholder/kat-mehrtages.jpg';
+import katOvernighter from '../assets/placeholder/kat-overnighter.jpg';
+import katTagestour from '../assets/placeholder/kat-tagestour.jpg';
+import katAusruestung from '../assets/placeholder/kat-ausruestung.jpg';
+
+const katBilder: Record<KategorieKey, ImageMetadata> = {
+  mehrtagestour: katMehrtages,
+  overnighter: katOvernighter,
+  tagestour: katTagestour,
+  ausruestung: katAusruestung,
+};
+
+const touren = await alleTouren();
+const [erste, ...weitere] = touren;
+const anzahl = (k: string) => touren.filter((t) => t.data.kategorie === k).length;
+const stats = site.stats.filter((s) => s.value);
+const neuSpalten = ['2fr', ...Array(Math.max(0, Math.min(touren.length, 4) - 1)).fill('1fr')].join(' ');
+const social = Object.entries(site.social).filter(([, url]) => url);
+---
+<Base>
+  <!-- Hero -->
+  <section class="hero">
+    <Image src={hero} alt="" class="hero-bild" widths={[800, 1400, 2000, 2400]} sizes="100vw" loading="eager" fetchpriority="high" />
+    <div class="wrap hero-inhalt">
+      <h1>{site.hero.headline}</h1>
+      <p class="hero-intro">{site.hero.intro}</p>
+      <div class="hero-knoepfe">
+        <a class="btn btn-senf" href="/touren/">Touren ansehen</a>
+        <a class="btn btn-hell" href="/ueber-mich/">Über mich</a>
+      </div>
+    </div>
+    {erste && (
+      <a class="hero-zuletzt" href={`/touren/${erste.id}/`}>
+        <span>Zuletzt unterwegs</span>
+        <strong>{erste.data.title}</strong>
+      </a>
+    )}
+  </section>
+
+  <!-- Kategorien -->
+  <section class="abschnitt">
+    <div class="wrap">
+      <div class="abschnitt-kopf">
+        <h2>Unterwegs</h2>
+        <a class="textlink" href="/touren/">Alle Touren</a>
+      </div>
+      <ul class="kat-raster">
+        {(Object.keys(kategorien) as KategorieKey[]).map((key) => (
+          <li>
+            <a href={`/kategorie/${key}/`} class="kat">
+              <Image src={katBilder[key]} alt="" widths={[300, 500, 700]} sizes="(max-width: 760px) 50vw, 25vw" />
+              <span class="kat-text">
+                <strong>{kategorien[key].name}</strong>
+                <span>{anzahl(key) === 1 ? '1 Beitrag' : `${anzahl(key)} Beiträge`}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Über mich -->
+  <section class="abschnitt ueber">
+    <div class="wrap ueber-raster">
+      <div class="ueber-bilder">
+        <Image src={ueberMich} alt="Platzhalter für ein Foto von Stephan mit Rad" class="ueber-bild-a" widths={[400, 700]} sizes="(max-width: 760px) 70vw, 30vw" />
+        <Image src={katOvernighter} alt="" class="ueber-bild-b" widths={[300, 500]} sizes="(max-width: 760px) 45vw, 18vw" />
+      </div>
+      <div class="ueber-text">
+        <h2>Hallo, ich bin Stephan</h2>
+        <p>{site.about.short}</p>
+        {stats.length > 0 && (
+          <dl class="zahlen">
+            {stats.map((s) => (
+              <div>
+                <dt>{s.label}</dt>
+                <dd>{s.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+        <a class="btn btn-dunkel" href="/ueber-mich/">Mehr über mich</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Neueste Touren -->
+  <section class="abschnitt">
+    <div class="wrap">
+      <div class="abschnitt-kopf">
+        <h2>Neueste Touren</h2>
+        <a class="textlink" href="/touren/">Alle Beiträge</a>
+      </div>
+      {touren.length === 0 ? (
+        <p>Die erste Tour ist in Arbeit.</p>
+      ) : (
+        <div class="neu-raster" style={`--spalten: ${neuSpalten}`}>
+          <div class="neu-gross"><TourCard tour={erste} gross /></div>
+          {weitere.slice(0, 3).map((t) => <TourCard tour={t} />)}
+        </div>
+      )}
+    </div>
+  </section>
+
+  {social.length > 0 && (
+    <section class="social">
+      <div class="wrap social-inner">
+        <p>Zwischen den Beiträgen bin ich hier unterwegs:</p>
+        <ul>
+          {social.map(([k, url]) => <li><a class="btn btn-dunkel" href={url} rel="me noopener">{k[0].toUpperCase() + k.slice(1)}</a></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: min(82vh, 46rem);
+    display: flex;
+    align-items: center;
+    color: #fff;
+    overflow: hidden;
+    background: var(--kiefer);
+  }
+  .hero-bild {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(16, 24, 20, 0.72) 0%, rgba(16, 24, 20, 0.35) 55%, rgba(16, 24, 20, 0) 85%);
+  }
+  .hero-inhalt { position: relative; z-index: 1; padding-block: 4rem 6rem; }
+  .hero h1 {
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: clamp(3.2rem, 7.5vw, 6.25rem);
+    line-height: 0.88;
+    letter-spacing: 0.01em;
+    max-width: 11ch;
+    text-wrap: balance;
+  }
+  .hero-intro {
+    max-width: 30rem;
+    font-size: 1.15rem;
+    margin: 1.5rem 0 2rem;
+    color: #eef0ec;
+  }
+  .hero-knoepfe { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .hero-zuletzt {
+    position: absolute;
+    z-index: 1;
+    right: var(--rand);
+    bottom: 1.75rem;
+    max-width: 18rem;
+    text-decoration: none;
+    border-left: 4px solid var(--senf);
+    padding-left: 0.8rem;
+    color: #fff;
+  }
+  .hero-zuletzt span { display: block; font-family: var(--display); font-weight: 700; color: var(--senf); }
+  .hero-zuletzt strong { font-weight: 600; line-height: 1.3; }
+  .hero-zuletzt:hover strong { text-decoration: underline; }
+
+  .abschnitt { padding-block: clamp(3.5rem, 7vw, 5.5rem); }
+
+  /* Kategorien */
+  .kat-raster {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+  .kat {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+    background: var(--kiefer);
+  }
+  .kat img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+  .kat:hover img { transform: scale(1.04); }
+  .kat::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 45%, rgba(16, 24, 20, 0.8));
+  }
+  .kat-text { position: absolute; z-index: 1; left: 1rem; right: 1rem; bottom: 1rem; }
+  .kat-text strong { display: block; font-family: var(--display); font-weight: 700; font-size: 1.6rem; line-height: 1; }
+  .kat-text span { font-size: 0.9rem; color: #dfe3de; }
+
+  /* Über mich */
+  .ueber { background: var(--sand); }
+  .ueber-raster {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+  }
+  .ueber-bilder { position: relative; padding-bottom: 18%; }
+  .ueber-bild-a { width: 72%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .ueber-bild-b {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 46%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 8px solid var(--sand);
+  }
+  .ueber-text h2 { font-size: clamp(2.4rem, 5vw, 3.5rem); }
+  .ueber-text > p { max-width: 34rem; margin: 1.2rem 0 2rem; }
+  .zahlen {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: 2.5rem;
+    margin: 0 0 2.25rem;
+  }
+  .zahlen div { display: flex; flex-direction: column-reverse; }
+  .zahlen dd { margin: 0; font-family: var(--display); font-weight: 900; font-size: 3rem; line-height: 1; }
+  .zahlen dt { font-size: 0.9rem; color: var(--stein); max-width: 9rem; line-height: 1.3; margin-top: 0.3rem; }
+
+  /* Neueste */
+  .neu-raster {
+    display: grid;
+    grid-template-columns: var(--spalten, 2fr 1fr 1fr 1fr);
+    gap: 1.5rem;
+  }
+  .neu-gross { grid-column: span 1; }
+
+  /* Social */
+  .social { border-top: 1px solid var(--linie); padding-block: 2.5rem; }
+  .social-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+  .social p { margin: 0; font-family: var(--display); font-weight: 700; font-size: 1.5rem; }
+  .social ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+  @media (max-width: 1000px) {
+    .neu-raster { grid-template-columns: 1fr 1fr; }
+    .neu-gross { grid-column: 1 / -1; }
+  }
+  @media (max-width: 760px) {
+    .hero { min-height: 36rem; align-items: flex-end; }
+    .hero::after { background: linear-gradient(0deg, rgba(16, 24, 20, 0.85) 0%, rgba(16, 24, 20, 0.4) 60%, rgba(16, 24, 20, 0.1) 100%); }
+    .hero-inhalt { padding-block: 3rem 7.5rem; }
+    .hero-zuletzt { left: var(--rand); right: auto; bottom: 1.5rem; }
+    .kat-raster { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .ueber-raster { grid-template-columns: 1fr; }
+    .zahlen { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .zahlen dd { font-size: 2.3rem; }
+    .neu-raster { grid-template-columns: 1fr; }
+  }
+</style>

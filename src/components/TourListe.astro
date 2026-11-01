@@ -1,0 +1,52 @@
+---
+import TourCard from './TourCard.astro';
+import { kategorien } from '../site.config';
+import type { Tour } from '../lib/touren';
+
+interface Props { titel: string; text?: string; touren: Tour[]; aktiv?: string }
+const { titel, text, touren, aktiv } = Astro.props;
+---
+<section class="wrap liste">
+  <header class="liste-kopf">
+    <h1>{titel}</h1>
+    {text && <p>{text}</p>}
+  </header>
+
+  <nav class="filter" aria-label="Nach Kategorie filtern">
+    <a href="/touren/" aria-current={!aktiv ? 'page' : undefined}>Alle</a>
+    {Object.entries(kategorien).map(([key, k]) => (
+      <a href={`/kategorie/${key}/`} aria-current={aktiv === key ? 'page' : undefined}>{k.name}</a>
+    ))}
+  </nav>
+
+  {touren.length === 0 ? (
+    <p class="leer">Hier steht noch nichts. Der erste Beitrag ist in Arbeit.</p>
+  ) : (
+    <div class="liste-raster">
+      {touren.map((t) => <TourCard tour={t} />)}
+    </div>
+  )}
+</section>
+
+<style>
+  .liste { padding-block: clamp(2.5rem, 6vw, 4.5rem) 5rem; }
+  .liste-kopf h1 { font-size: clamp(3rem, 7vw, 5rem); }
+  .liste-kopf p { margin: 0.75rem 0 0; font-size: 1.15rem; color: var(--stein); max-width: 36rem; }
+  .filter { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2rem 0 2.5rem; }
+  .filter a {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    border: 2px solid var(--linie);
+    padding: 0.3rem 0.9rem;
+  }
+  .filter a:hover { border-color: var(--ink); }
+  .filter a[aria-current='page'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .liste-raster {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: 2.5rem 1.5rem;
+  }
+  .leer { color: var(--stein); }
+</style>

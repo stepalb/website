@@ -1,0 +1,69 @@
+---
+// Karte erst nach Klick laden: keine Verbindung zu OpenStreetMap ohne Zustimmung.
+interface Props { line: [number, number][]; gpxUrl?: string; name: string }
+const { line, gpxUrl, name } = Astro.props;
+---
+<div class="karte-box" data-line={JSON.stringify(line)}>
+  <div class="karte-platzhalter">
+    <p>Die Karte wird von OpenStreetMap geladen. Dabei wird deine IP-Adresse an deren Server übertragen.</p>
+    <button type="button" class="btn btn-senf karte-laden">Karte laden</button>
+  </div>
+  <div class="karte-ziel" hidden></div>
+</div>
+{gpxUrl && (
+  <p class="gpx-download">
+    <a class="btn btn-dunkel" href={gpxUrl} download={`${name}.gpx`}>GPX-Datei herunterladen</a>
+  </p>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('.karte-box').forEach((box) => {
+    const btn = box.querySelector<HTMLButtonElement>('.karte-laden');
+    btn?.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Karte wird geladen';
+      const [{ default: L }] = await Promise.all([import('leaflet'), import('leaflet/dist/leaflet.css')]);
+      const ziel = box.querySelector<HTMLElement>('.karte-ziel')!;
+      box.querySelector('.karte-platzhalter')?.remove();
+      ziel.hidden = false;
+      const line = JSON.parse(box.dataset.line || '[]') as [number, number][];
+      const map = L.map(ziel, { scrollWheelZoom: false });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende',
+      }).addTo(map);
+      const poly = L.polyline(line, { color: '#c98a00', weight: 4 }).addTo(map);
+      const punkt = (ll: [number, number], fill: string) =>
+        L.circleMarker(ll, { radius: 7, color: '#18211d', weight: 2, fillColor: fill, fillOpacity: 1 }).addTo(map);
+      if (line.length) {
+        punkt(line[0], '#ffffff').bindTooltip('Start');
+        punkt(line[line.length - 1], '#18211d').bindTooltip('Ziel');
+      }
+      map.fitBounds(poly.getBounds(), { padding: [24, 24] });
+    });
+  });
+</script>
+
+<style>
+  .karte-box {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background:
+      repeating-radial-gradient(circle at 30% 60%, transparent 0 22px, rgba(31, 46, 40, 0.08) 22px 23px),
+      var(--sand);
+  }
+  .karte-platzhalter {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1rem;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  .karte-platzhalter p { max-width: 26rem; margin: 0; font-size: 0.95rem; color: var(--stein); }
+  .karte-ziel { position: absolute; inset: 0; }
+  .gpx-download { margin: 1rem 0 0; }
+  @media (max-width: 600px) { .karte-box { aspect-ratio: 4 / 5; } }
+</style>

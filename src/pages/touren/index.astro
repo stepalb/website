@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import TourListe from '../../components/TourListe.astro';
+import { alleTouren } from '../../lib/touren';
+const touren = await alleTouren();
+---
+<Base title="Touren" description="Alle Touren und Beiträge: Mehrtagestouren, Overnighter, Tagestouren und Ausrüstung.">
+  <TourListe titel="Touren" text="Alle Beiträge, die neuesten zuerst." touren={touren} />
+</Base>

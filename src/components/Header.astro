@@ -1,0 +1,109 @@
+---
+import { site } from '../site.config';
+
+const links = [
+  { href: '/', label: 'Start' },
+  { href: '/touren/', label: 'Touren' },
+  { href: '/kategorie/ausruestung/', label: 'Ausrüstung' },
+  { href: '/ueber-mich/', label: 'Über mich' },
+];
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const [vor, nach] = site.name.split(' ');
+---
+<header class="kopf">
+  <div class="wrap kopf-inner">
+    <a href="/" class="logo" aria-label={`${site.name}, zur Startseite`}>
+      <span class="logo-name">{vor}<br />{nach}</span>
+    </a>
+
+    <nav aria-label="Hauptnavigation" class="nav-desktop">
+      <ul>
+        {links.map((l) => (
+          <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <details class="nav-mobil">
+      <summary aria-label="Menü öffnen">
+        <span></span><span></span><span></span>
+      </summary>
+      <nav aria-label="Hauptnavigation mobil">
+        <ul>
+          {links.map((l) => (
+            <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .kopf {
+    background: var(--papier);
+    border-bottom: 1px solid var(--linie);
+    position: relative;
+    z-index: 20;
+  }
+  .kopf-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 4.5rem;
+  }
+  .logo {
+    text-decoration: none;
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 1.35rem;
+    line-height: 0.9;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-left: 4px solid var(--senf);
+    padding-left: 0.6rem;
+  }
+  .nav-desktop ul, .nav-mobil ul { list-style: none; margin: 0; padding: 0; }
+  .nav-desktop ul { display: flex; gap: 2.25rem; }
+  .nav-desktop a, .nav-mobil a {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-decoration: none;
+    padding-block: 0.4rem;
+    border-bottom: 3px solid transparent;
+  }
+  .nav-desktop a:hover { border-color: var(--linie); }
+  .nav-desktop a[aria-current='page'] { border-color: var(--senf); }
+
+  .nav-mobil { display: none; }
+  .nav-mobil summary {
+    list-style: none;
+    cursor: pointer;
+    width: 2.75rem;
+    height: 2.75rem;
+    display: grid;
+    align-content: center;
+    gap: 6px;
+    padding: 0.5rem;
+  }
+  .nav-mobil summary::-webkit-details-marker { display: none; }
+  .nav-mobil summary span { display: block; height: 2px; background: var(--ink); }
+  .nav-mobil nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--papier);
+    border-bottom: 1px solid var(--linie);
+    padding: 0.5rem var(--rand) 1.25rem;
+  }
+  .nav-mobil li a { display: block; font-size: 1.6rem; padding-block: 0.5rem; }
+  .nav-mobil a[aria-current='page'] { color: var(--senf-dunkel); }
+
+  @media (max-width: 760px) {
+    .nav-desktop { display: none; }
+    .nav-mobil { display: block; }
+  }
+</style>
