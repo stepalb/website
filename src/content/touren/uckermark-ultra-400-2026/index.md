@@ -17,15 +17,17 @@ Der Uckermark Ultra 400 ist ein Bikepacking-Event über zwei Tage: am ersten Tag
 
 ## Tag 1: Bernau – Neustrelitz
 
-Kurz vor sechs ging es in Bernau los. Die Strecke führte an diesem Tag viel über Sandwege, und das kostet auf Dauer Kraft.
+Kurz vor sechs ging es in Bernau los. Die Strecke führte an diesem Tag viel über Sandwege.
+
+![Weg mit einer Rohrleitung über einen Graben](./01-rohrbruecke.jpg) ![Alte Windmühle ohne Flügel](./01-windmuehle.jpg)
 
 Eine längere Pause habe ich in Himmelpfort gemacht. Danach bin ich nicht mehr allein gefahren, sondern zu zweit mit jemandem weiter.
 
 ![Mein Gravelbike auf einer Holzbrücke über dem Wasser](./02-bruecke.jpg) ![Pause in Himmelpfort](./03-pause.jpg)
 
-Gegen Ende des Tages fing es an zu regnen. Aus dem Sand wurde Schlamm, und die letzten Kilometer zogen sich entsprechend.
+Gegen Ende des Tages fing es an zu regnen, und aus dem Sand wurde Schlamm.
 
-![Mitfahrer auf nasser Straße im Abendlicht](./04-zu-zweit.jpg) ![Regenbogen über einem abgeernteten Feld](./05-regenbogen.jpg)
+![Regenbogen über einem abgeernteten Feld](./05-regenbogen.jpg) ![Ich auf nasser Straße im Abendlicht, fotografiert von meinem Mitfahrer](./04-zu-zweit.jpg)
 
 In Neustrelitz kamen wir im Dunkeln an: 209 km nach gut 15 Stunden.
 
