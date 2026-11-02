@@ -48,6 +48,10 @@ gpx: track.gpx
 Text in Markdown. Bilder mit ![Beschreibung](./02-lager.jpg)
 ```
 
+Zwei Bilder in derselben Zeile (durch Leerzeichen getrennt) stehen nebeneinander.
+Stephan sammelt Inhalte für neue Beiträge in der Ideenwand (Board „Bikepacking Blog“ → „Draft“).
+Die Bilder dort sind stark verkleinert; Originale holen (z. B. Ordner `~/Documents/Blog` auf seinem Mac).
+
 Schreibstil: Stephans Notizen in seiner Stimme ausformulieren, Ich-Form, locker und konkret,
 keine erfundenen Erlebnisse oder Fakten. Was unklar ist, bei Stephan nachfragen.
 Überschriften `##` für Abschnitte (z. B. pro Tag).
@@ -71,7 +75,7 @@ Schriften; die Karte lädt OpenStreetMap erst nach Klick (Datenschutz).
 
 ## Offene Punkte
 
-- Beispiel-Touren (`beispiel-*`) löschen, sobald die erste echte Tour online ist
+- Alte Beispielseiten `touren/beispiel-*` liegen noch auf dem Server (Upload löscht nichts); bei Gelegenheit in cPanel entfernen
 - Platzhalterbilder (Hero, Kategorien, Über mich) durch echte Fotos ersetzen
 - Zahlen in `site.config.ts` (stats) füllen
 - HTTPS-Weiterleitung in `public/.htaccess` aktivieren, sobald das Zertifikat gilt

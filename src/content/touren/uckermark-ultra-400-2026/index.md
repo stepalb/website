@@ -10,7 +10,7 @@ tage: 2
 distanz: 409
 hoehenmeter: 2244
 gpx: track.gpx
-entwurf: true
+entwurf: false
 ---
 
 Der Uckermark Ultra 400 ist ein Bikepacking-Event über zwei Tage: am ersten Tag rund 200 km von Bernau nach Neustrelitz, am zweiten Tag wieder zurück. Dazwischen eine Nacht im Event-Camp, für mich im Biwaksack.
