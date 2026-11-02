@@ -123,6 +123,11 @@ h1, h2, h3, h4 {
   width: 100%;
   margin-block: 2rem;
 }
+/* Hochkant-Fotos nicht riesig werden lassen */
+.prosa p > img:only-child { max-height: 34rem; width: auto; max-width: 100%; margin-inline: auto; display: block; }
+/* Zwei Bilder in einer Zeile im Markdown = nebeneinander */
+.prosa p:has(> img + img) { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-block: 2rem; }
+.prosa p:has(> img + img) > img { margin: 0; height: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
 .prosa blockquote {
   margin-inline: 0;
   padding-left: 1.25rem;

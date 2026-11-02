@@ -43,7 +43,7 @@ export const kategorien = {
   },
   overnighter: {
     name: 'Overnighter',
-    text: 'Nach der Arbeit los, eine Nacht draußen, morgens zurück.',
+    text: 'Eine Nacht draußen, egal wie weit.',
   },
   tagestour: {
     name: 'Tagestouren',
